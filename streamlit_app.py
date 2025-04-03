@@ -105,114 +105,47 @@ def get_gpt_response(prompt):
         return f"Error: {e}"
 
 # Generate Excel File for Download
-# Define the 33 Parameters for download
+# Define the 33 Product Evaluation Parameters for download
 data = {
-    "Parameter": ["Wow Factor", "Newness Score", "Trend Alignment", "Hobby Niche Fit", "Audience Understanding", 
-                  "Cross-Platform Trend", "Google Trends Trajectory", "Amazon Sales Rank", "Customer Review Insights", 
-                  "Seasonal Demand Insight", "Engagement", "Demonstrability Score", "Creative Versatility", 
-                  "Marketing Hook Strength", "Organic Sentiment Score", "Hashtag Popularity", "Influencer Potential (IG)", 
-                  "YouTube Review Presence", "Perceived Value", "Impulse Price Match", "Profit Margin Room", 
-                  "Shipping Efficiency", "Reliable Fulfillment", "Repeatability Score", "Scarcity Advantage Score", 
-                  "USP (Uniqueness)", "Testing Simplicity", "Video Link"],  # List of all parameters
-    "Score 1-2 (Low)": [
-        "The product is generic or lacks appeal.", 
-        "Very old product with no novelty.", 
-        "Product is outdated or irrelevant.", 
-        "No connection to hobbies or interests.", 
-        "Doesn't meet the needs of the target audience.",
-        "Product only works on one platform.", 
-        "Negative or flat trends.", 
-        "Low or no rank on Amazon.", 
-        "Mostly negative reviews.", 
-        "Low demand throughout the year.", 
-        "Very low engagement.", 
-        "Difficult to demonstrate or understand.", 
-        "Limited creative potential.", 
-        "Weak or irrelevant hook.", 
-        "Mostly negative sentiment.", 
-        "Low or no hashtag activity.", 
-        "No influencer appeal.", 
-        "No YouTube reviews available.", 
-        "Doesn't meet consumer expectations.",
-        "Doesn't match impulsive buying behavior.",
-        "Low profit margin or unsustainable.",
-        "Inefficient shipping process.",
-        "Unreliable fulfillment process.",
-        "Low repeatability potential.",
-        "Low scarcity or exclusivity.",
-        "No uniqueness in the market.",
-        "Hard to test in market."
-    ],
-    "Score 4-6 (Medium)": [
-        "Moderately appealing with some visual impact.", 
-        "Moderately new product with some uniqueness.", 
-        "Fits some current trends, but not very strong.", 
-        "Fits some hobbies, but niche appeal is moderate.", 
-        "Addresses some customer needs but with gaps.",
-        "Moderately supports various platforms.", 
-        "Moderately positive trend.", 
-        "Mid-range ranking on Amazon.", 
-        "Mixed reviews, some positives and negatives.", 
-        "Moderate seasonal demand.", 
-        "Moderate engagement.", 
-        "Moderately easy to demonstrate.", 
-        "Some flexibility for creative campaigns.", 
-        "Moderately strong hook with some appeal.", 
-        "Mixed or neutral sentiment.", 
-        "Moderate hashtag activity.", 
-        "Some influencers may be interested.", 
-        "Some reviews available on YouTube.", 
-        "Meets some consumer expectations.",
-        "Some impulse buy potential.",
-        "Moderate profit margin.",
-        "Moderate shipping efficiency.",
-        "Moderate fulfillment reliability.",
-        "Some repeatability potential.",
-        "Moderate scarcity advantage.",
-        "Some uniqueness in the market.",
-        "Can be tested in market."
-    ],
-    "Score 7-10 (High)": [
-        "Highly eye-catching, unique, and visually stunning.", 
-        "Fresh and innovative product with high appeal.", 
-        "Perfectly aligned with current hot trends.", 
-        "Strong fit for a passionate hobbyist market.", 
-        "Fully meets the target audience's needs.",
-        "Highly supported on all major platforms.", 
-        "Strong upward trend on Google Trends.", 
-        "Top-selling product in its category.", 
-        "Highly rated product with positive feedback.", 
-        "High demand during peak seasons.", 
-        "High engagement and interaction.", 
-        "Very easy to demonstrate and understand.", 
-        "Highly versatile and can be marketed creatively.", 
-        "Extremely strong and irresistible marketing hook.", 
-        "Strong positive sentiment with high trust.", 
-        "Highly popular and trending hashtags.", 
-        "Strong appeal to top influencers in the niche.", 
-        "Strong presence with high-quality YouTube reviews.", 
-        "Fully meets consumer expectations.",
-        "Strong impulse buy potential.",
-        "High profit margin.",
-        "Highly efficient shipping process.",
-        "Highly reliable fulfillment process.",
-        "Strong repeatability potential.",
-        "Strong scarcity advantage.",
-        "Uniquely positioned in the market.",
-        "Easily tested and validated."
-    ],
-    "Video Link": []  # Empty column for users to add their video links
+    "Title": ["Product 1", "Product 2"],  # Add titles of your products
+    "Category": ["Category A", "Category B"],  # Add categories of your products
+    "Wow Factor": [8, 7],  # Add scores for each parameter
+    "Newness Score": [7, 6],  # Continue for each parameter
+    "Trend Alignment": [9, 8],
+    "Hobby Niche Fit": [6, 7],
+    "Audience Understanding Score": [8, 6],
+    "Cross-Platform Trend": [7, 8],
+    "Google Trends Trajectory": [9, 7],
+    "Amazon Sales Rank": [8, 6],
+    "Customer Review Insights": [7, 6],
+    "Seasonal Demand Insight": [9, 8],
+    "Engagement": [8, 7],
+    "Demonstrability Score": [9, 7],
+    "Creative Versatility": [8, 7],
+    "Marketing Hook Strength": [7, 8],
+    "Organic Sentiment Score": [9, 7],
+    "Hashtag Popularity": [8, 7],
+    "Influencer Potential (IG)": [9, 8],
+    "YouTube Review Presence": [8, 7],
+    "Perceived Value": [9, 8],
+    "Impulse Price Match": [7, 6],
+    "Profit Margin Room": [8, 9],
+    "Shipping Efficiency": [7, 8],
+    "Reliable Fulfillment": [9, 7],
+    "Repeatability Score": [8, 7],
+    "Scarcity Advantage Score": [9, 8],
+    "USP (Uniqueness)": [8, 7],
+    "Testing Simplicity": [7, 9],
+    "Video Link": ["https://tiktok.com/xyz", "https://instagram.com/xyz"]  # Add video links
 }
 
-df_help = pd.DataFrame(data)
+# Convert data into DataFrame
+filtered_df = pd.DataFrame(data)
 
-# Ensure the necessary libraries are available
-import openpyxl
+# Save the DataFrame to an Excel file
+output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
+filtered_df.to_excel(output_file_filtered, index=False)
 
-# Save the DataFrame as an Excel file
-output_file_help = "Product_Evaluation_Parameters_Scoring_System.xlsx"
-df_help.to_excel(output_file_help, index=False)
-
-# Display download button for the table as Excel
-with open(output_file_help, "rb") as f:
-    st.download_button("⬇️ Download Product Evaluation Scoring System", f, output_file_help, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+# Display download button for the new Excel sheet in Streamlit
+with open(output_file_filtered, "rb") as f:
+    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
