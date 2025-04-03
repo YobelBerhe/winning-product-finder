@@ -1,4 +1,16 @@
+import streamlit as st
+from PIL import Image
 
+# Set the page config FIRST
+st.set_page_config(page_title="Winning Product Toolkit", layout="wide")
+
+# Display Logo
+image = Image.open('A_2D_digital_graphic_design_presentation_features_.png')  # Path to your logo file
+st.image(image, width=300)  # Adjust the width as needed
+
+# Your other imports
+import pandas as pd
+import openai
 from PIL import Image
 import streamlit as st
 import pandas as pd
