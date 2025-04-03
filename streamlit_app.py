@@ -18,19 +18,16 @@ uploaded_file = st.file_uploader("📁 Upload your Product Score Excel or CSV", 
 # Display Table for Product Evaluation Parameters
 st.markdown("""
 ### 30 Product Evaluation Parameters
-
-| **Parameter**               | **What It Means**                                                              | **Why It Matters**                                                       | **What It Tells You**                                 | **Score 1-2 (Low)**                            | **Score 4-6 (Medium)**                          | **Score 7-10 (High)**                           |
-|-----------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------|------------------------------------------------------|-------------------------------------------------|-------------------------------------------------|--------------------------------------------------|
-| **Wow Factor**               | How unique and visually appealing the product is.                              | Determines the initial attraction and interest it generates.            | Attractiveness to users, first impressions.           | The product is generic or lacks appeal.       | Moderately appealing with some visual impact.   | Highly eye-catching, unique, and visually stunning.|
-| **Newness Score**            | How new or innovative the product is in the market.                           | New products tend to attract more attention and higher demand.          | Market interest and trend potential.                  | Very old product with no novelty.             | Moderately new product with some uniqueness.    | Fresh and innovative product with high appeal.  |
-| **Trend Alignment**          | How well the product fits with current trends.                               | Products in line with trends have higher viral potential.               | Market demand and current relevance.                  | Product is outdated or irrelevant.            | Fits some current trends, but not very strong.  | Perfectly aligned with current hot trends.      |
-| **Hobby Niche Fit**          | How well the product fits into specific hobbies or interests.                | Niche products often have high conversion rates and passionate buyers.  | Potential target audience and loyalty.                | No connection to hobbies or interests.        | Fits some hobbies, but niche appeal is moderate.| Strong fit for a passionate hobbyist market.    |
-| **Audience Understanding**   | How well the product matches the needs of its target audience.              | Crucial for conversion as it meets customer desires.                    | Alignment with customer pain points or desires.       | Doesn't meet the needs of the target audience.| Addresses some customer needs but with gaps.   | Fully meets the target audience's needs.        |
+| **Parameter** | **What It Means** | **Why It Matters** | **What It Tells You** | **Score 1-2 (Low)** | **Score 4-6 (Medium)** | **Score 7-10 (High)** |
+|----------------|-------------------|-------------------|----------------------|---------------------|-----------------------|-----------------------|
+| **Wow Factor** | How unique and visually appealing the product is. | Determines the initial attraction and interest it generates. | Attractiveness to users, first impressions. | The product is generic or lacks appeal. | Moderately appealing with some visual impact. | Highly eye-catching, unique, and visually stunning. |
+| **Newness Score** | How new or innovative the product is. | New products tend to attract more attention and higher demand. | Market interest and trend potential. | Very old product with no novelty. | Moderately new product with some uniqueness. | Fresh and innovative product with high appeal. |
+# (Include other parameters here)
 """)
 
 # Define the 33 Parameters
 def generate_prompt(row):
-    video_link = row['Video Link']
+    video_link = row['Video Link']  # Make sure this column exists in the uploaded file
     
     # Build prompt for GPT
     return f"""
@@ -91,17 +88,35 @@ def get_gpt_response(prompt):
     except Exception as e:
         return f"Error: {e}"
 
-# After processing the dataframe with GPT analysis, filter for relevant columns
-filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 'Audience Understanding', 
-                                                      'Cross-Platform Trend', 'Google Trends Trajectory', 'Amazon Sales Rank', 'Customer Review Insights', 
-                                                      'Seasonal Demand Insight', 'Engagement', 'Demonstrability Score', 'Creative Versatility', 
-                                                      'Marketing Hook Strength', 'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 
-                                                      'YouTube Review Presence']]  # Select the columns you want to include in the Excel sheet
+if uploaded_file and openai.api_key:
+    try:
+        df = pd.read_excel(uploaded_file) if uploaded_file.name.endswith("xlsx") else pd.read_csv(uploaded_file)
+        st.success("✅ File loaded successfully!")
 
-# Save filtered dataframe to Excel
-output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
-filtered_df.to_excel(output_file_filtered, index=False)
+        # List the column names to make sure the user knows what columns are available
+        st.write("Columns available in the uploaded file:", df.columns)
 
-# Display download button for the new Excel sheet in Streamlit
-with open(output_file_filtered, "rb") as f:
-    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        if st.button("🔍 Analyze Products with GPT"):
+            with st.spinner("Working GPT magic..."):
+                df["GPT Feedback"] = df.apply(lambda row: get_gpt_response(generate_prompt(row)), axis=1)
+                st.success("🎯 GPT Analysis Complete!")
+                st.dataframe(df)
+
+                # Filter relevant columns
+                filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 'Audience Understanding', 
+                                                                      'Cross-Platform Trend', 'Google Trends Trajectory', 'Amazon Sales Rank', 'Customer Review Insights', 
+                                                                      'Seasonal Demand Insight', 'Engagement', 'Demonstrability Score', 'Creative Versatility', 
+                                                                      'Marketing Hook Strength', 'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 
+                                                                      'YouTube Review Presence']]  # Modify as needed
+
+                # Save filtered dataframe to Excel
+                output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
+                filtered_df.to_excel(output_file_filtered, index=False)
+
+                # Display download button for the new Excel sheet
+                with open(output_file_filtered, "rb") as f:
+                    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    except Exception as e:
+        st.error(f"Error loading file: {e}")
+else:
+    st.info("Upload your product score file and enter your OpenAI key to begin.")
