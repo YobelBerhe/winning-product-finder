@@ -124,10 +124,13 @@ data = {
 
 df_help = pd.DataFrame(data)
 
-# Save to Excel
+# Ensure the necessary libraries are available
+import openpyxl
+
+# Save the DataFrame as an Excel file
 output_file_help = "Product_Evaluation_Parameters.xlsx"
 df_help.to_excel(output_file_help, index=False)
 
-# Display download button
+# Display download button for the table as Excel
 with open(output_file_help, "rb") as f:
     st.download_button("⬇️ Download Product Evaluation Parameters", f, output_file_help, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
