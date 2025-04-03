@@ -1,9 +1,9 @@
+# Set the page config FIRST
 import streamlit as st
 from PIL import Image
 import pandas as pd
 import openai
 
-# Set the page config FIRST
 st.set_page_config(page_title="Winning Product Toolkit", layout="wide")
 
 # Display Logo
@@ -18,16 +18,32 @@ uploaded_file = st.file_uploader("📁 Upload your Product Score Excel or CSV", 
 # Display Table for Product Evaluation Parameters
 st.markdown("""
 ### 30 Product Evaluation Parameters
-| **Parameter** | **What It Means** | **Why It Matters** | **What It Tells You** | **Score 1-2 (Low)** | **Score 4-6 (Medium)** | **Score 7-10 (High)** |
-|----------------|-------------------|-------------------|----------------------|---------------------|-----------------------|-----------------------|
-| **Wow Factor** | How unique and visually appealing the product is. | Determines the initial attraction and interest it generates. | Attractiveness to users, first impressions. | The product is generic or lacks appeal. | Moderately appealing with some visual impact. | Highly eye-catching, unique, and visually stunning. |
-| **Newness Score** | How new or innovative the product is. | New products tend to attract more attention and higher demand. | Market interest and trend potential. | Very old product with no novelty. | Moderately new product with some uniqueness. | Fresh and innovative product with high appeal. |
-# (Include other parameters here)
+
+| **Parameter**               | **What It Means**                                                              | **Why It Matters**                                                       | **What It Tells You**                                 | **Score 1-2 (Low)**                            | **Score 4-6 (Medium)**                          | **Score 7-10 (High)**                           |
+|-----------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------|------------------------------------------------------|-------------------------------------------------|-------------------------------------------------|--------------------------------------------------|
+| **Wow Factor**               | How unique and visually appealing the product is.                              | Determines the initial attraction and interest it generates.            | Attractiveness to users, first impressions.           | The product is generic or lacks appeal.       | Moderately appealing with some visual impact.   | Highly eye-catching, unique, and visually stunning.|
+| **Newness Score**            | How new or innovative the product is in the market.                           | New products tend to attract more attention and higher demand.          | Market interest and trend potential.                  | Very old product with no novelty.             | Moderately new product with some uniqueness.    | Fresh and innovative product with high appeal.  |
+| **Trend Alignment**          | How well the product fits with current trends.                               | Products in line with trends have higher viral potential.               | Market demand and current relevance.                  | Product is outdated or irrelevant.            | Fits some current trends, but not very strong.  | Perfectly aligned with current hot trends.      |
+| **Hobby Niche Fit**          | How well the product fits into specific hobbies or interests.                | Niche products often have high conversion rates and passionate buyers.  | Potential target audience and loyalty.                | No connection to hobbies or interests.        | Fits some hobbies, but niche appeal is moderate.| Strong fit for a passionate hobbyist market.    |
+| **Audience Understanding**   | How well the product matches the needs of its target audience.              | Crucial for conversion as it meets customer desires.                    | Alignment with customer pain points or desires.       | Doesn't meet the needs of the target audience.| Addresses some customer needs but with gaps.   | Fully meets the target audience's needs.        |
+| **Cross-Platform Trend**     | How well the product is supported by multiple social platforms.              | Ensures product can reach various demographics.                          | Viral potential across platforms.                     | Product only works on one platform.            | Moderately supports various platforms.          | Highly supported on all major platforms.        |
+| **Google Trends Trajectory** | How well the product is performing based on Google Trends data.              | Products with positive trends are more likely to succeed.               | Indicates search demand and market growth.             | Negative or flat trends.                      | Moderately positive trend.                     | Strong upward trend on Google Trends.           |
+| **Amazon Sales Rank**        | Product's ranking on Amazon within its category.                             | Indicates the popularity and market demand for a product.                | Market competition and demand.                         | Low or no rank on Amazon.                     | Mid-range ranking.                             | Top-selling product in its category.            |
+| **Customer Review Insights** | Analyzes customer reviews to identify product satisfaction and issues.        | Reviews are essential for social proof and user feedback.               | Product satisfaction, issues, and quality.             | Mostly negative reviews.                       | Mixed reviews, some positives and negatives.    | Highly rated product with positive feedback.    |
+| **Seasonal Demand Insight**  | How the product performs seasonally or during specific times of the year.     | Seasonal products can drive sales during certain periods.               | Indicates the best times to promote or stock products.| Low demand throughout the year.                | Moderate seasonal demand.                      | High demand during peak seasons.                |
+| **Engagement**               | How well the product engages with customers or its target market.             | Engagement is critical for measuring customer interest.                 | Measures customer interaction with product.           | Very low engagement.                          | Moderate engagement.                           | High engagement and interaction.                |
+| **Demonstrability Score**    | How easily the product can be demonstrated or explained to customers.         | A product that is easy to demonstrate can have higher conversion rates.  | Indicates ease of marketing and selling the product.   | Difficult to demonstrate or understand.       | Moderately easy to demonstrate.                 | Very easy to demonstrate and understand.        |
+| **Creative Versatility**     | How well the product can be marketed or adapted for different audiences.     | Versatile products allow for a wider range of creative campaigns.        | Indicates potential for creative marketing strategies. | Limited creative potential.                   | Some flexibility for creative campaigns.        | Highly versatile and can be marketed creatively.|
+| **Marketing Hook Strength**  | The strength and appeal of the product's marketing angle.                    | Strong hooks help drive attention and conversion rates.                  | Indicates the potential for a successful marketing campaign. | Weak or irrelevant hook.                     | Moderately strong hook with some appeal.        | Extremely strong and irresistible marketing hook. |
+| **Organic Sentiment Score**  | Measures how positively the product is perceived online (without paid ads).  | Organic sentiment can be an indicator of genuine customer interest.      | Indicates brand sentiment and customer trust.         | Mostly negative sentiment.                     | Mixed or neutral sentiment.                    | Strong positive sentiment with high trust.      |
+| **Hashtag Popularity**       | How popular hashtags related to the product are on social media platforms.   | Products with high hashtag popularity tend to have viral potential.      | Measures social media potential and reach.             | Low or no hashtag activity.                   | Moderate hashtag activity.                     | Highly popular and trending hashtags.           |
+| **Influencer Potential (IG)**| The product's potential to be promoted by influencers on Instagram.         | Influencer marketing can rapidly increase product visibility.            | Indicates influencer partnership potential.            | No influencer appeal.                         | Some influencers may be interested.            | Strong appeal to top influencers in the niche.  |
+| **YouTube Review Presence**  | How well the product is reviewed on YouTube.                                | YouTube reviews often influence buying decisions.                        | Indicates trust and visibility in the market.         | No YouTube reviews available.                  | Some reviews available on YouTube.              | Strong presence with high-quality YouTube reviews.|
 """)
 
 # Define the 33 Parameters
 def generate_prompt(row):
-    video_link = row['Video Link']  # Make sure this column exists in the uploaded file
+    video_link = row['Video Link']
     
     # Build prompt for GPT
     return f"""
@@ -88,35 +104,30 @@ def get_gpt_response(prompt):
     except Exception as e:
         return f"Error: {e}"
 
-if uploaded_file and openai.api_key:
-    try:
-        df = pd.read_excel(uploaded_file) if uploaded_file.name.endswith("xlsx") else pd.read_csv(uploaded_file)
-        st.success("✅ File loaded successfully!")
+# Generate Excel File for Download
+data = {
+    "Parameter": ["Wow Factor", "Newness Score", "Trend Alignment", "Hobby Niche Fit", "Audience Understanding", 
+                  "Cross-Platform Trend", "Google Trends Trajectory", "Amazon Sales Rank", "Customer Review Insights", 
+                  "Seasonal Demand Insight", "Engagement", "Demonstrability Score", "Creative Versatility", 
+                  "Marketing Hook Strength", "Organic Sentiment Score", "Hashtag Popularity", "Influencer Potential (IG)", 
+                  "YouTube Review Presence"],  # ... Add all 33 parameters here 
+    "What It Means": ["How unique and visually appealing the product is.", "How new or innovative the product is.", "How well the product fits with current trends.", 
+                      "How well the product fits into specific hobbies or interests.", "How well the product matches the needs of its target audience.",
+                      "How well the product is supported by multiple social platforms.", "How well the product is performing based on Google Trends data.", 
+                      "Product's ranking on Amazon within its category.", "Analyzes customer reviews to identify product satisfaction and issues.",
+                      "How the product performs seasonally or during specific times of the year.", "How well the product engages with customers or its target market.",
+                      "How easily the product can be demonstrated or explained to customers.", "How well the product can be marketed or adapted for different audiences.", 
+                      "The strength and appeal of the product's marketing angle.", "Measures how positively the product is perceived online.", "How popular hashtags related to the product are on social media platforms.",
+                      "The product's potential to be promoted by influencers on Instagram.", "How well the product is reviewed on YouTube."],  # Continue for all rows 
+    # Add columns for 'Why It Matters', 'What It Tells You', etc.
+}
 
-        # List the column names to make sure the user knows what columns are available
-        st.write("Columns available in the uploaded file:", df.columns)
+df_help = pd.DataFrame(data)
 
-        if st.button("🔍 Analyze Products with GPT"):
-            with st.spinner("Working GPT magic..."):
-                df["GPT Feedback"] = df.apply(lambda row: get_gpt_response(generate_prompt(row)), axis=1)
-                st.success("🎯 GPT Analysis Complete!")
-                st.dataframe(df)
+# Save to Excel
+output_file_help = "Product_Evaluation_Parameters.xlsx"
+df_help.to_excel(output_file_help, index=False)
 
-                # Filter relevant columns
-                filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 'Audience Understanding', 
-                                                                      'Cross-Platform Trend', 'Google Trends Trajectory', 'Amazon Sales Rank', 'Customer Review Insights', 
-                                                                      'Seasonal Demand Insight', 'Engagement', 'Demonstrability Score', 'Creative Versatility', 
-                                                                      'Marketing Hook Strength', 'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 
-                                                                      'YouTube Review Presence']]  # Modify as needed
-
-                # Save filtered dataframe to Excel
-                output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
-                filtered_df.to_excel(output_file_filtered, index=False)
-
-                # Display download button for the new Excel sheet
-                with open(output_file_filtered, "rb") as f:
-                    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    except Exception as e:
-        st.error(f"Error loading file: {e}")
-else:
-    st.info("Upload your product score file and enter your OpenAI key to begin.")
+# Display download button
+with open(output_file_help, "rb") as f:
+    st.download_button("⬇️ Download Product Evaluation Parameters", f, output_file_help, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
