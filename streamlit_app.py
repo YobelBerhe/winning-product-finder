@@ -1,7 +1,7 @@
+# Set the page config FIRST
 import streamlit as st
 from PIL import Image
 
-# Set the page config FIRST
 st.set_page_config(page_title="Winning Product Toolkit", layout="wide")
 
 # Display Logo
@@ -12,11 +12,6 @@ st.image(image, width=300)  # Adjust the width as needed
 import pandas as pd
 import openai
 
-import streamlit as st
-import pandas as pd
-import openai
-
-st.set_page_config(page_title="Winning Product Toolkit", layout="wide")
 st.title("📦 Ultimate Product Scoring & GPT Analysis Tool")
 
 openai.api_key = st.text_input("🔑 Enter your OpenAI API Key", type="password")
