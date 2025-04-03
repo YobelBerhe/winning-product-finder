@@ -104,33 +104,17 @@ def get_gpt_response(prompt):
     except Exception as e:
         return f"Error: {e}"
 
-# Generate Excel File for Download
-data = {
-    "Parameter": ["Wow Factor", "Newness Score", "Trend Alignment", "Hobby Niche Fit", "Audience Understanding", 
-                  "Cross-Platform Trend", "Google Trends Trajectory", "Amazon Sales Rank", "Customer Review Insights", 
-                  "Seasonal Demand Insight", "Engagement", "Demonstrability Score", "Creative Versatility", 
-                  "Marketing Hook Strength", "Organic Sentiment Score", "Hashtag Popularity", "Influencer Potential (IG)", 
-                  "YouTube Review Presence"],  # ... Add all 33 parameters here 
-    "What It Means": ["How unique and visually appealing the product is.", "How new or innovative the product is.", "How well the product fits with current trends.", 
-                      "How well the product fits into specific hobbies or interests.", "How well the product matches the needs of its target audience.",
-                      "How well the product is supported by multiple social platforms.", "How well the product is performing based on Google Trends data.", 
-                      "Product's ranking on Amazon within its category.", "Analyzes customer reviews to identify product satisfaction and issues.",
-                      "How the product performs seasonally or during specific times of the year.", "How well the product engages with customers or its target market.",
-                      "How easily the product can be demonstrated or explained to customers.", "How well the product can be marketed or adapted for different audiences.", 
-                      "The strength and appeal of the product's marketing angle.", "Measures how positively the product is perceived online.", "How popular hashtags related to the product are on social media platforms.",
-                      "The product's potential to be promoted by influencers on Instagram.", "How well the product is reviewed on YouTube."],  # Continue for all rows 
-    # Add columns for 'Why It Matters', 'What It Tells You', etc.
-}
+# After processing the dataframe with GPT analysis, filter for relevant columns
+filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 'Audience Understanding', 
+                                                      'Cross-Platform Trend', 'Google Trends Trajectory', 'Amazon Sales Rank', 'Customer Review Insights', 
+                                                      'Seasonal Demand Insight', 'Engagement', 'Demonstrability Score', 'Creative Versatility', 
+                                                      'Marketing Hook Strength', 'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 
+                                                      'YouTube Review Presence']]  # Select the columns you want to include in the Excel sheet
 
-df_help = pd.DataFrame(data)
+# Save filtered dataframe to Excel
+output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
+filtered_df.to_excel(output_file_filtered, index=False)
 
-# Ensure the necessary libraries are available
-import openpyxl
-
-# Save the DataFrame as an Excel file
-output_file_help = "Product_Evaluation_Parameters.xlsx"
-df_help.to_excel(output_file_help, index=False)
-
-# Display download button for the table as Excel
-with open(output_file_help, "rb") as f:
-    st.download_button("⬇️ Download Product Evaluation Parameters", f, output_file_help, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+# Display download button for the new Excel sheet in Streamlit
+with open(output_file_filtered, "rb") as f:
+    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
