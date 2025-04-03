@@ -105,16 +105,33 @@ def get_gpt_response(prompt):
         return f"Error: {e}"
 
 # After processing the dataframe with GPT analysis, filter for relevant columns
-filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 'Audience Understanding', 
-                                                      'Cross-Platform Trend', 'Google Trends Trajectory', 'Amazon Sales Rank', 'Customer Review Insights', 
-                                                      'Seasonal Demand Insight', 'Engagement', 'Demonstrability Score', 'Creative Versatility', 
-                                                      'Marketing Hook Strength', 'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 
-                                                      'YouTube Review Presence']]  # Select the columns you want to include in the Excel sheet
+if uploaded_file and openai.api_key:
+    try:
+        df = pd.read_excel(uploaded_file) if uploaded_file.name.endswith("xlsx") else pd.read_csv(uploaded_file)
+        st.success("✅ File loaded successfully!")
 
-# Save filtered dataframe to Excel
-output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
-filtered_df.to_excel(output_file_filtered, index=False)
+        if st.button("🔍 Analyze Products with GPT"):
+            with st.spinner("Working GPT magic..."):
+                # Apply GPT scoring and commentary
+                df["GPT Feedback"] = df.apply(lambda row: get_gpt_response(generate_prompt(row)), axis=1)
+                st.success("🎯 GPT Analysis Complete!")
+                st.dataframe(df)
 
-# Display download button for the new Excel sheet in Streamlit
-with open(output_file_filtered, "rb") as f:
-    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                # Now filter the columns based on the correct column names
+                filtered_df = df[['Title', 'Category', 'Video Link'] + ['Wow Factor', 'Newness Score', 'Trend Alignment', 'Hobby Niche Fit', 
+                                                                      'Audience Understanding', 'Cross-Platform Trend', 'Google Trends Trajectory', 
+                                                                      'Amazon Sales Rank', 'Customer Review Insights', 'Seasonal Demand Insight', 
+                                                                      'Engagement', 'Demonstrability Score', 'Creative Versatility', 'Marketing Hook Strength', 
+                                                                      'Organic Sentiment Score', 'Hashtag Popularity', 'Influencer Potential (IG)', 'YouTube Review Presence']]
+
+                # Save filtered dataframe to Excel
+                output_file_filtered = "Filtered_Product_Evaluation_Parameters.xlsx"
+                filtered_df.to_excel(output_file_filtered, index=False)
+
+                # Display download button for the new Excel sheet in Streamlit
+                with open(output_file_filtered, "rb") as f:
+                    st.download_button("⬇️ Download Filtered Product Evaluation Parameters", f, output_file_filtered, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    except Exception as e:
+        st.error(f"Error loading file: {e}")
+else:
+    st.info("Upload your product score file and enter your OpenAI key to begin.")
