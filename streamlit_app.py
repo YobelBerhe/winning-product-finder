@@ -1,4 +1,15 @@
 
+from PIL import Image
+import streamlit as st
+import pandas as pd
+import openai
+
+# Display Logo
+image = Image.open('A_2D_digital_graphic_design_presentation_features_.png')  # Path to your logo file
+st.image(image, width=300)  # Adjust the width as needed
+
+# Your existing code continues here...
+
 import streamlit as st
 import pandas as pd
 import openai
