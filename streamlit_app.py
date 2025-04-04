@@ -1,10 +1,9 @@
-# Set the page config FIRST
+import openai
 import streamlit as st
 from PIL import Image
 import pandas as pd
-import openai
 
-# Set the page config for streamlit
+# Set the page config for Streamlit
 st.set_page_config(page_title="Winning Product Toolkit", layout="wide")
 
 # Display Logo
@@ -13,11 +12,29 @@ st.image(image, width=300)  # Adjust the width as needed
 
 # Set up OpenAI API key
 openai.api_key = st.text_input("🔑 Enter your OpenAI API Key", type="password")
+
+# Mode selection for product scoring
 mode = st.radio("Choose Scoring Mode:", ["Beginner Mode", "Pro Mode"])
+
+# File upload for product score data
 uploaded_file = st.file_uploader("📁 Upload your Product Score Excel or CSV", type=["xlsx", "csv"])
 
-# Display Table for Product Evaluation Parameters
+# Function to interact with OpenAI API
+def get_gpt_response(prompt):
+    try:
+        response = openai.Completion.create(
+            model="gpt-4",  # Using GPT-4 model
+            prompt=prompt,  # The prompt you send to GPT
+            temperature=0.4,  # Controls the randomness of the response
+            max_tokens=1000  # Limits the length of the generated text
+        )
+        return response['choices'][0]['text'].strip()  # Extract and return the response text
+    except Exception as e:
+        return f"Error: {e}"
+
+# Display Table for Product Evaluation Parameters (sample table)
 st.markdown("""
+
 ### 30 Product Evaluation Parameters
 
 | **Parameter**               | **What It Means**                                                              | **Why It Matters**                                                       | **What It Tells You**                                 | **Score 1-2 (Low)**                            | **Score 4-6 (Medium)**                          | **Score 7-10 (High)**                           |
@@ -27,6 +44,19 @@ st.markdown("""
 | **Trend Alignment**          | How well the product fits with current trends.                               | Products in line with trends have higher viral potential.               | Market demand and current relevance.                  | Product is outdated or irrelevant.            | Fits some current trends, but not very strong.  | Perfectly aligned with current hot trends.      |
 | **Hobby Niche Fit**          | How well the product fits into specific hobbies or interests.                | Niche products often have high conversion rates and passionate buyers.  | Potential target audience and loyalty.                | No connection to hobbies or interests.        | Fits some hobbies, but niche appeal is moderate.| Strong fit for a passionate hobbyist market.    |
 | **Audience Understanding**   | How well the product matches the needs of its target audience.              | Crucial for conversion as it meets customer desires.                    | Alignment with customer pain points or desires.       | Doesn't meet the needs of the target audience.| Addresses some customer needs but with gaps.   | Fully meets the target audience's needs.        |
+| **Cross-Platform Trend**     | How well the product is supported by multiple social platforms.              | Ensures product can reach various demographics.                          | Viral potential across platforms.                     | Product only works on one platform.            | Moderately supports various platforms.          | Highly supported on all major platforms.        |
+| **Google Trends Trajectory** | How well the product is performing based on Google Trends data.              | Products with positive trends are more likely to succeed.               | Indicates search demand and market growth.             | Negative or flat trends.                      | Moderately positive trend.                     | Strong upward trend on Google Trends.           |
+| **Amazon Sales Rank**        | Product's ranking on Amazon within its category.                             | Indicates the popularity and market demand for a product.                | Market competition and demand.                         | Low or no rank on Amazon.                     | Mid-range ranking.                             | Top-selling product in its category.            |
+| **Customer Review Insights** | Analyzes customer reviews to identify product satisfaction and issues.        | Reviews are essential for social proof and user feedback.               | Product satisfaction, issues, and quality.             | Mostly negative reviews.                       | Mixed reviews, some positives and negatives.    | Highly rated product with positive feedback.    |
+| **Seasonal Demand Insight**  | How the product performs seasonally or during specific times of the year.     | Seasonal products can drive sales during certain periods.               | Indicates the best times to promote or stock products.| Low demand throughout the year.                | Moderate seasonal demand.                      | High demand during peak seasons.                |
+| **Engagement**               | How well the product engages with customers or its target market.             | Engagement is critical for measuring customer interest.                 | Measures customer interaction with product.           | Very low engagement.                          | Moderate engagement.                           | High engagement and interaction.                |
+| **Demonstrability Score**    | How easily the product can be demonstrated or explained to customers.         | A product that is easy to demonstrate can have higher conversion rates.  | Indicates ease of marketing and selling the product.   | Difficult to demonstrate or understand.       | Moderately easy to demonstrate.                 | Very easy to demonstrate and understand.        |
+| **Creative Versatility**     | How well the product can be marketed or adapted for different audiences.     | Versatile products allow for a wider range of creative campaigns.        | Indicates potential for creative marketing strategies. | Limited creative potential.                   | Some flexibility for creative campaigns.        | Highly versatile and can be marketed creatively.|
+| **Marketing Hook Strength**  | The strength and appeal of the product's marketing angle.                    | Strong hooks help drive attention and conversion rates.                  | Indicates the potential for a successful marketing campaign. | Weak or irrelevant hook.                     | Moderately strong hook with some appeal.        | Extremely strong and irresistible marketing hook. |
+| **Organic Sentiment Score**  | Measures how positively the product is perceived online (without paid ads).  | Organic sentiment can be an indicator of genuine customer interest.      | Indicates brand sentiment and customer trust.         | Mostly negative sentiment.                     | Mixed or neutral sentiment.                    | Strong positive sentiment with high trust.      |
+| **Hashtag Popularity**       | How popular hashtags related to the product are on social media platforms.   | Products with high hashtag popularity tend to have viral potential.      | Measures social media potential and reach.             | Low or no hashtag activity.                   | Moderate hashtag activity.                     | Highly popular and trending hashtags.           |
+| **Influencer Potential (IG)**| The product's potential to be promoted by influencers on Instagram.         | Influencer marketing can rapidly increase product visibility.            | Indicates influencer partnership potential.            | No influencer appeal.                         | Some influencers may be interested.            | Strong appeal to top influencers in the niche.  |
+| **YouTube Review Presence**  | How well the product is reviewed on YouTube.                                | YouTube reviews often influence buying decisions.                        | Indicates trust and visibility in the market.         | No YouTube reviews available.                  | Some reviews available on YouTube.              | Strong presence with high-quality YouTube reviews.|
 """)
 
 # Define the 33 Parameters for GPT
