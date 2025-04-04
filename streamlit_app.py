@@ -63,7 +63,7 @@ if uploaded_file and openai.api_key:
 def generate_prompt(row):
     video_link = row['Video Link']
     return f"""
-    You're a dropshipping expert. This product has been evaluated across 33 different criteria.
+    You're a dropshipping expert. This product has been evaluated across 30 different criteria.
 
     Product: {row['Title']} | Category: {row['Category']}
     Scores:
